@@ -8,58 +8,55 @@ import {
   Patch,
   Post,
 } from '@nestjs/common';
-import { CreateEventDto } from './create-event.dto';
+
 import { Event } from './event.entity';
+import { CreateEventDto } from './create-event.dto';
 import { UpdatedEventDto } from './update-event.dto';
+import { Repository } from 'typeorm';
+import { InjectRepository } from '@nestjs/typeorm';
 
 @Controller('/events')
 export class EventsController {
-  private events: Event[] = [];
+  constructor(
+    @InjectRepository(Event) private readonly repository: Repository<Event>,
+  ) {}
 
   // Ideal tener 5 acciones máximo
   // Esto ya que se debe trabajar con recursos tipo RESTful
   @Get()
-  findAll() {
-    return this.events;
+  async findAll() {
+    return this.repository.find();
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string): Event {
-    const event = this.events.find((event) => event.id === Number(id));
-    return event;
+  async findOne(@Param('id') id: string): Promise<Event | undefined> {
+    return await this.repository.findOne(id);
   }
 
   // best practice for post and update is to return the value created/updated
   @Post()
-  create(@Body() input: CreateEventDto): Event {
-    const event = {
+  async create(@Body() input: CreateEventDto): Promise<Event> {
+    return await this.repository.save({
       ...input,
-      when: new Date(input.when),
-      id: this.events.length + 1,
-    };
-    this.events.push(event);
-    return event;
+      when: input.when ? new Date(input.when) : new Date(),
+    });
   }
 
   @Patch(':id')
-  update(
-    @Param('id') id: string,
-    @Body() input: UpdatedEventDto,
-  ): Event | undefined {
-    const index = this.events.findIndex((event) => event.id === Number(id));
-
-    this.events[index] = {
-      ...this.events[index],
+  async update(@Param('id') id: string, @Body() input: UpdatedEventDto) {
+    const event = await this.repository.findOne(id);
+    return await this.repository.save({
+      ...event,
       ...input,
-      when: input.when ? new Date(input.when) : this.events[index].when,
-    };
-    return this.events[index];
+      when: input.when ? new Date(input.when) : input.when,
+    });
   }
 
   // best practice for delete is to return nothing but status code 204
   @Delete(':id')
   @HttpCode(204)
-  remove(@Param('id') id: string): void {
-    this.events = this.events.filter((event) => event.id !== Number(id));
+  async remove(@Param('id') id: string): Promise<void> {
+    const event = await this.repository.findOne(id);
+    await this.repository.remove(event);
   }
 }

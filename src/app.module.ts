@@ -7,6 +7,7 @@ import { AppService } from './app.service';
 import { EventsController } from './events.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { join } from 'path';
+import { Event } from './event.entity';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { join } from 'path';
       synchronize: true,
       logging: false,
     }),
+    TypeOrmModule.forFeature([Event]),
   ],
   controllers: [AppController, EventsController],
   providers: [AppService],
