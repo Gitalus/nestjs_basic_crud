@@ -3,10 +3,13 @@ import {
   Controller,
   Delete,
   Get,
+  HttpCode,
   Param,
   Patch,
   Post,
 } from '@nestjs/common';
+import { CreateEventDto } from './create-event.dto';
+import { UpdatedEventDto } from './update-event.dto';
 
 @Controller('/events')
 export class EventsController {
@@ -25,16 +28,19 @@ export class EventsController {
     return { id, name: 'First Event' };
   }
 
+  // best practice for post and update is to return the value created/updated
   @Post()
-  create(@Body() input: unknown) {
+  create(@Body() input: CreateEventDto) {
     return input;
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() input: unknown) {
-    return ['hola'];
+  update(@Param('id') id: string, @Body() input: UpdatedEventDto) {
+    return input;
   }
 
-  @Delete('id')
+  // best practice for delete is to return nothing but status code 204
+  @Delete(':id')
+  @HttpCode(204)
   remove(@Param('id') id: string) {}
 }
