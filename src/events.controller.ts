@@ -7,6 +7,7 @@ import {
   Param,
   Patch,
   Post,
+  ValidationPipe,
 } from '@nestjs/common';
 
 import { Event } from './event.entity';
@@ -34,8 +35,9 @@ export class EventsController {
   }
 
   // best practice for post and update is to return the value created/updated
+  // ValidationPide checks with decorators
   @Post()
-  async create(@Body() input: CreateEventDto): Promise<Event> {
+  async create(@Body(ValidationPipe) input: CreateEventDto): Promise<Event> {
     return await this.repository.save({
       ...input,
       when: input.when ? new Date(input.when) : new Date(),
@@ -43,7 +45,10 @@ export class EventsController {
   }
 
   @Patch(':id')
-  async update(@Param('id') id: string, @Body() input: UpdatedEventDto) {
+  async update(
+    @Param('id' /* , ParseIntPipe */) id: string,
+    @Body() input: UpdatedEventDto,
+  ) {
     const event = await this.repository.findOne(id);
     return await this.repository.save({
       ...event,
