@@ -7,7 +7,6 @@ import {
   Param,
   Patch,
   Post,
-  ValidationPipe,
 } from '@nestjs/common';
 
 import { Event } from './event.entity';
