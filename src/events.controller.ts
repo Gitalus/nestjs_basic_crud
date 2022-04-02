@@ -16,6 +16,7 @@ import { UpdatedEventDto } from './update-event.dto';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 
+// @UsePipes(ValidationPipe) Can be used on action level o class level, the validator must be inside
 @Controller('/events')
 export class EventsController {
   constructor(
@@ -37,7 +38,10 @@ export class EventsController {
   // best practice for post and update is to return the value created/updated
   // ValidationPide checks with decorators
   @Post()
-  async create(@Body(ValidationPipe) input: CreateEventDto): Promise<Event> {
+  async create(
+    @Body(/* new ValidationPipe({ groups: ['create'] }) */)
+    input: CreateEventDto,
+  ): Promise<Event> {
     return await this.repository.save({
       ...input,
       when: input.when ? new Date(input.when) : new Date(),
