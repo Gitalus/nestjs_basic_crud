@@ -8,7 +8,7 @@ export default registerAs(
     type: 'mongodb',
     useUnifiedTopology: true,
     url: process.env.DB_HOST,
-    entities: [join(__dirname, '**/**.entity{.ts,.js}')],
+    entities: [join(__dirname, '../**/**.entity{.ts,.js}')],
     synchronize: true,
     logging: false,
   }),

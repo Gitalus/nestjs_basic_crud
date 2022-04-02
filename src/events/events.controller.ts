@@ -4,6 +4,7 @@ import {
   Delete,
   Get,
   HttpCode,
+  Logger,
   Param,
   Patch,
   Post,
@@ -18,6 +19,8 @@ import { InjectRepository } from '@nestjs/typeorm';
 // @UsePipes(ValidationPipe) Can be used on action level o class level, the validator must be inside
 @Controller('/events')
 export class EventsController {
+  private readonly logger = new Logger(EventsController.name);
+
   constructor(
     @InjectRepository(Event) private readonly repository: Repository<Event>,
   ) {}
@@ -26,7 +29,11 @@ export class EventsController {
   // Esto ya que se debe trabajar con recursos tipo RESTful
   @Get()
   async findAll() {
-    return this.repository.find();
+    this.logger.log(`Hit the findAll route`);
+    const events = await this.repository.find();
+    this.logger.debug(`Found ${events.length} events `);
+
+    return events;
   }
 
   @Get(':id')
