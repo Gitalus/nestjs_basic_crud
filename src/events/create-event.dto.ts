@@ -1,4 +1,4 @@
-import { IsDateString, IsString, Length } from 'class-validator';
+import { IsDateString, IsOptional, IsString, Length } from 'class-validator';
 
 export class CreateEventDto {
   @IsString()
@@ -9,6 +9,7 @@ export class CreateEventDto {
   description: string;
 
   @IsDateString()
+  @IsOptional()
   when: string;
 
   // @Length(5, 255, { groups: ['create'] })

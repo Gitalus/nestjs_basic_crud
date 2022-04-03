@@ -1,11 +1,13 @@
 import { Module } from '@nestjs/common';
-import { TypeOrmModule } from '@nestjs/typeorm';
+import { MongooseModule } from '@nestjs/mongoose';
+import { Event, EventSchema } from './event.entity';
 
-import { Event } from './event.entity';
 import { EventsController } from './events.controller';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Event])],
+  imports: [
+    MongooseModule.forFeature([{ name: Event.name, schema: EventSchema }]),
+  ],
   controllers: [EventsController],
 })
 export class EventsModule {}

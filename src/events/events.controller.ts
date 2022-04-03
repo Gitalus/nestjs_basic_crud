@@ -11,11 +11,11 @@ import {
   Post,
 } from '@nestjs/common';
 
-import { Event } from './event.entity';
+import { Event, EventDocument } from './event.entity';
 import { CreateEventDto } from './create-event.dto';
 import { UpdatedEventDto } from './update-event.dto';
-import { Repository } from 'typeorm';
-import { InjectRepository } from '@nestjs/typeorm';
+import { Model } from 'mongoose';
+import { InjectModel } from '@nestjs/mongoose';
 
 // @UsePipes(ValidationPipe) Can be used on action level o class level, the validator must be inside
 @Controller('/events')
@@ -23,7 +23,7 @@ export class EventsController {
   private readonly logger = new Logger(EventsController.name);
 
   constructor(
-    @InjectRepository(Event) private readonly repository: Repository<Event>,
+    @InjectModel(Event.name) private readonly repository: Model<EventDocument>,
   ) {}
 
   // Ideal tener 5 acciones máximo
@@ -38,9 +38,9 @@ export class EventsController {
   }
 
   @Get(':id')
-  async findOne(@Param('id') id: string): Promise<Event | undefined> {
-    const event = await this.repository.findOne(id);
-
+  async findOne(@Param('id') id: string) {
+    const event = await this.repository.find({ _id: id });
+    console.log(typeof event);
     if (!event) {
       throw new NotFoundException();
     }
@@ -54,34 +54,34 @@ export class EventsController {
     @Body(/* new ValidationPipe({ groups: ['create'] }) */)
     input: CreateEventDto,
   ): Promise<Event> {
-    return await this.repository.save({
+    return new this.repository({
       ...input,
       when: input.when ? new Date(input.when) : new Date(),
-    });
+    }).save();
   }
 
   @Patch(':id')
   async update(
     @Param('id' /* , ParseIntPipe */) id: string,
     @Body() input: UpdatedEventDto,
-  ) {
-    const event = await this.repository.findOne(id);
+  ): Promise<Event> {
+    const event = await this.repository.findOne({ _id: id });
 
     if (!event) {
       throw new NotFoundException();
     }
-    return await this.repository.save({
+    return new this.repository({
       ...event,
       ...input,
       when: input.when ? new Date(input.when) : input.when,
-    });
+    }).save();
   }
 
   // best practice for delete is to return nothing but status code 204
   @Delete(':id')
   @HttpCode(204)
   async remove(@Param('id') id: string): Promise<void> {
-    const event = await this.repository.findOne(id);
+    const event = await this.repository.findOne({ _id: id });
 
     if (!event) {
       throw new NotFoundException();

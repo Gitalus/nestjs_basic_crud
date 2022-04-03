@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { TypeOrmModule } from '@nestjs/typeorm';
+import { MongooseModule } from '@nestjs/mongoose';
 
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
@@ -17,7 +17,7 @@ import ormConfigProd from './config/orm.config.prod';
       load: [ormConfig],
       expandVariables: true, // allows to use env on .env using ${}
     }), // loads variable from .env
-    TypeOrmModule.forRootAsync({
+    MongooseModule.forRootAsync({
       useFactory:
         process.env.NODE_EN !== 'production' ? ormConfig : ormConfigProd,
     }),
