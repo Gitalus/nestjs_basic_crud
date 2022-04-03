@@ -65,16 +65,19 @@ export class EventsController {
     @Param('id' /* , ParseIntPipe */) id: string,
     @Body() input: UpdatedEventDto,
   ): Promise<Event> {
-    const event = await this.repository.findOne({ _id: id });
+    const newEventData = {
+      ...input,
+      when: input.when ? new Date(input.when) : input.when,
+    };
+
+    const event = await this.repository
+      .findByIdAndUpdate(id, newEventData)
+      .setOptions({ overwrite: true, new: true });
 
     if (!event) {
       throw new NotFoundException();
     }
-    return new this.repository({
-      ...event,
-      ...input,
-      when: input.when ? new Date(input.when) : input.when,
-    }).save();
+    return event;
   }
 
   // best practice for delete is to return nothing but status code 204
