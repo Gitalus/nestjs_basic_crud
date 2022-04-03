@@ -23,7 +23,8 @@ export class EventsController {
   private readonly logger = new Logger(EventsController.name);
 
   constructor(
-    @InjectModel(Event.name) private readonly repository: Model<EventDocument>,
+    @InjectModel(Event.name)
+    private readonly eventRepository: Model<EventDocument>,
   ) {}
 
   // Ideal tener 5 acciones máximo
@@ -31,7 +32,7 @@ export class EventsController {
   @Get()
   async findAll() {
     this.logger.log(`Hit the findAll route`);
-    const events = await this.repository.find();
+    const events = await this.eventRepository.find();
     this.logger.debug(`Found ${events.length} events `);
 
     return events;
@@ -39,7 +40,7 @@ export class EventsController {
 
   @Get(':id')
   async findOne(@Param('id') id: string) {
-    const event = await this.repository.find({ _id: id });
+    const event = await this.eventRepository.findById(id);
     console.log(typeof event);
     if (!event) {
       throw new NotFoundException();
@@ -54,7 +55,7 @@ export class EventsController {
     @Body(/* new ValidationPipe({ groups: ['create'] }) */)
     input: CreateEventDto,
   ): Promise<Event> {
-    return new this.repository({
+    return new this.eventRepository({
       ...input,
       when: input.when ? new Date(input.when) : new Date(),
     }).save();
@@ -70,7 +71,7 @@ export class EventsController {
       when: input.when ? new Date(input.when) : input.when,
     };
 
-    const event = await this.repository
+    const event = await this.eventRepository
       .findByIdAndUpdate(id, newEventData)
       .setOptions({ overwrite: true, new: true });
 
@@ -84,11 +85,11 @@ export class EventsController {
   @Delete(':id')
   @HttpCode(204)
   async remove(@Param('id') id: string): Promise<void> {
-    const event = await this.repository.findOne({ _id: id });
+    const event = await this.eventRepository.findById(id);
 
     if (!event) {
       throw new NotFoundException();
     }
-    await this.repository.remove(event);
+    await this.eventRepository.remove(event);
   }
 }
