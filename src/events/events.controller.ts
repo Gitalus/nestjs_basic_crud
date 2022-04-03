@@ -5,6 +5,7 @@ import {
   Get,
   HttpCode,
   Logger,
+  NotFoundException,
   Param,
   Patch,
   Post,
@@ -38,7 +39,12 @@ export class EventsController {
 
   @Get(':id')
   async findOne(@Param('id') id: string): Promise<Event | undefined> {
-    return await this.repository.findOne(id);
+    const event = await this.repository.findOne(id);
+
+    if (!event) {
+      throw new NotFoundException();
+    }
+    return event;
   }
 
   // best practice for post and update is to return the value created/updated
@@ -60,6 +66,10 @@ export class EventsController {
     @Body() input: UpdatedEventDto,
   ) {
     const event = await this.repository.findOne(id);
+
+    if (!event) {
+      throw new NotFoundException();
+    }
     return await this.repository.save({
       ...event,
       ...input,
@@ -72,6 +82,10 @@ export class EventsController {
   @HttpCode(204)
   async remove(@Param('id') id: string): Promise<void> {
     const event = await this.repository.findOne(id);
+
+    if (!event) {
+      throw new NotFoundException();
+    }
     await this.repository.remove(event);
   }
 }
