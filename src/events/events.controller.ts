@@ -16,6 +16,7 @@ import { CreateEventDto } from './create-event.dto';
 import { UpdatedEventDto } from './update-event.dto';
 import { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
+import { Attendee, AttendeeDocument } from './attendee.entity';
 
 // @UsePipes(ValidationPipe) Can be used on action level o class level, the validator must be inside
 @Controller('/events')
@@ -25,6 +26,8 @@ export class EventsController {
   constructor(
     @InjectModel(Event.name)
     private readonly eventRepository: Model<EventDocument>,
+    @InjectModel(Attendee.name)
+    private readonly attendeeRepository: Model<AttendeeDocument>,
   ) {}
 
   // Ideal tener 5 acciones máximo
