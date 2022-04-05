@@ -20,6 +20,9 @@ export class Event {
   // @OneToMany(() => Attendee, (attendee) => attendee.event)
   @Prop({ type: [{ type: mongooseSchema.Types.ObjectId, ref: 'Attendee' }] })
   attendess: Attendee[];
+
+  // this is a virtual property, not saved on db
+  attendessCount?: number;
 }
 
 export const EventSchema = SchemaFactory.createForClass(Event);

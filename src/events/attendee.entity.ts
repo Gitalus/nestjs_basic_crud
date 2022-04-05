@@ -4,6 +4,12 @@ import { Document, Schema as mongooseSchema } from 'mongoose';
 
 export type AttendeeDocument = Attendee & Document;
 
+export enum AttendeeAnswerEnum {
+  Accepted = 1,
+  Maybe,
+  Rejected,
+}
+
 @Schema()
 export class Attendee {
   @Prop()

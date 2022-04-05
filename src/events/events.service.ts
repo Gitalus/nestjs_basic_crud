@@ -11,7 +11,19 @@ export class EventsService {
     private readonly eventsRepository: Model<EventDocument>,
   ) {}
 
+  public async getEventWithAttendeeCount(
+    id: Types.ObjectId,
+  ): Promise<Event | undefined> {
+    const event = await this.getEvent(id);
+    event.attendessCount = event.attendess.length;
+
+    return event;
+  }
+
   public async getEvent(id: Types.ObjectId): Promise<Event | null> {
-    return await this.eventsRepository.findById(id).populate('attendess');
+    return await this.eventsRepository
+      .findById(id)
+      .populate('attendess')
+      .lean();
   }
 }
