@@ -22,7 +22,11 @@ export class Event {
   attendess: Attendee[];
 
   // this is a virtual property, not saved on db
-  attendessCount?: number;
+  attendeesCount?: number;
+
+  attendeeAccepted?: number;
+  attendeeMaybe?: number;
+  attendeeRejected?: number;
 }
 
 export const EventSchema = SchemaFactory.createForClass(Event);

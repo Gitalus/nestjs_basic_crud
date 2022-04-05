@@ -17,6 +17,12 @@ export class Attendee {
 
   @Prop({ type: mongooseSchema.Types.ObjectId, ref: 'Event' })
   event: Event;
+
+  @Prop({
+    type: mongooseSchema.Types.Number,
+    default: AttendeeAnswerEnum.Accepted,
+  })
+  answer: AttendeeAnswerEnum;
 }
 
 export const AttendeeSchema = SchemaFactory.createForClass(Attendee);
