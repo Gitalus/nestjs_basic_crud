@@ -14,9 +14,10 @@ import {
 import { Event, EventDocument } from './event.entity';
 import { CreateEventDto } from './create-event.dto';
 import { UpdatedEventDto } from './update-event.dto';
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
 import { Attendee, AttendeeDocument } from './attendee.entity';
+import { EventsService } from './events.service';
 
 // @UsePipes(ValidationPipe) Can be used on action level o class level, the validator must be inside
 @Controller('/events')
@@ -28,6 +29,7 @@ export class EventsController {
     private readonly eventRepository: Model<EventDocument>,
     @InjectModel(Attendee.name)
     private readonly attendeeRepository: Model<AttendeeDocument>,
+    private readonly eventsService: EventsService,
   ) {}
 
   // Ideal tener 5 acciones máximo
@@ -42,9 +44,9 @@ export class EventsController {
   }
 
   @Get(':id')
-  async findOne(@Param('id') id: string) {
-    const event = await this.eventRepository.findById(id);
-    console.log(typeof event);
+  async findOne(@Param('id') id: Types.ObjectId) {
+    const event = await this.eventsService.getEvent(id);
+
     if (!event) {
       throw new NotFoundException();
     }

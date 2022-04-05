@@ -4,6 +4,7 @@ import { Attendee, AttendeeSchema } from './attendee.entity';
 import { Event, EventSchema } from './event.entity';
 
 import { EventsController } from './events.controller';
+import { EventsService } from './events.service';
 
 @Module({
   imports: [
@@ -13,5 +14,6 @@ import { EventsController } from './events.controller';
     ]),
   ],
   controllers: [EventsController],
+  providers: [EventsService],
 })
 export class EventsModule {}

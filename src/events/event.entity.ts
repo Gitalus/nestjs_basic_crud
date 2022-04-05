@@ -18,7 +18,7 @@ export class Event {
   address: string;
 
   // @OneToMany(() => Attendee, (attendee) => attendee.event)
-  @Prop({ type: [mongooseSchema.Types.ObjectId], ref: 'Attendee' })
+  @Prop({ type: [{ type: mongooseSchema.Types.ObjectId, ref: 'Attendee' }] })
   attendess: Attendee[];
 }
 
